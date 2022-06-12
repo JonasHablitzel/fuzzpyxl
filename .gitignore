@@ -4,6 +4,8 @@ __pycache__
 .mypy_cache
 .coverage
 coverage.xml
+*.whl
+*.tar.gz
 
 #VS Code 
 .vscode
@@ -15,3 +17,6 @@ pages
 
 #own folders
 prototype
+
+#Build
+dist

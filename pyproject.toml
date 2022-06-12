@@ -1,7 +1,10 @@
 [tool.poetry]
 name = "fuzzpyxl"
 version = "0.0.1"
-description = ""
+license = "MIT"
+repository = "https://github.com/JonasHablitzel/fuzzpyxl"
+keywords = ["Excel","Search"]
+description = "Helper functions to easily search for Excel-Cells by value, color, formatting or else"
 authors = ["Jonas Hablitzel"]
 
 [tool.poetry.dependencies]
