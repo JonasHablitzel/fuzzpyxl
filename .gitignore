@@ -1,0 +1,17 @@
+# Python caches and temporary files
+__pycache__
+.pytest_cache
+.mypy_cache
+.coverage
+coverage.xml
+
+#VS Code 
+.vscode
+
+#dokumentation
+site
+public
+pages
+
+#own folders
+prototype
