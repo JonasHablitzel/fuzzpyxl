@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import re
 from typing import Callable, Optional, Union
 from dataclasses import dataclass, field
 from openpyxl.styles import Color as oxlColor
@@ -132,12 +133,17 @@ def init_oxlFont(
     )
 
 
+
+
+
 @dataclass
 class SearchCellDefinition:
     fill_color: Optional[oxlColor] = None
     data_type: str = "s"
+    cell_type: ReadOnlyCellTypes = ReadOnlyCellTypes    
     border: Optional[oxlBorder] = field(default_factory=init_oxlBorder)
     value: Optional[Union[str, int, float]] = None
+    re_pattern:Optional[re.Pattern] = None
     alignment: Optional[oxlAlignment] = field(default_factory=init_oxlAlignment)
     font: Optional[oxlFont] = field(default_factory=init_oxlFont)
 
