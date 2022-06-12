@@ -1,0 +1,45 @@
+site_name: Fuzzpyxl
+
+## Repository
+repo_name: fuzzpyxl
+repo_url: https://gitlab.avl.com/avld-methodology-and-tools/fuzzpyxl
+edit_uri: "" #disables edit button
+
+## Configuration
+theme:
+  name: material
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.expand
+  palette:
+    primary: darkblue
+    accent: red
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_root_heading: false
+            show_source: true
+            show_category_heading: true
+          selection:
+            filters:
+              - "!^_" # exclude all members starting with _
+
+nav:
+  - Home: index.md
+  - Code Reference:
+      - Finder: finder-reference.md
