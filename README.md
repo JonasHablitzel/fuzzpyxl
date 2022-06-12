@@ -1,7 +1,9 @@
 # Fuzzpyxl
-Most Excel file are not uniformaly formatted [openpyxl](https://openpyxl.readthedocs.io/en/stable/) so hardcoded cell coordinates aren't feasible.
+When dealing with Excelfiles inside python or pandas it is sometimes hard because not all files follow the same conventions.
 This libary should help to deal with these kind of problems.
-It enables you to find Excel rows, by value, formatting, color or else and go from there
+It enables you to find Excel rows, by value, formatting, color or else and go from there.
+
+Internally it is based on [openpyxl](https://openpyxl.readthedocs.io/en/stable/).
 
 ## Documentation
 To build the documentation run:
