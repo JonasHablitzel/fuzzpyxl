@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fuzzpyxl"
-version = "0.0.2"
+version = "0.0.4"
 license = "MIT"
 repository = "https://github.com/JonasHablitzel/fuzzpyxl"
 keywords = ["Excel","Search"]
@@ -8,7 +8,7 @@ description = "Helper functions to easily search for Excel-Cells by value, color
 authors = ["Jonas Hablitzel"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 openpyxl = "^3.0"
 colormath = "^3.0.0"
 

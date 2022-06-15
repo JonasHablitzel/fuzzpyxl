@@ -10,10 +10,10 @@ from openpyxl.worksheet.worksheet import Worksheet
 class CellArea:
     """Defines a area inside a Excel Page, index starts from 1"""
 
-    min_row: int
-    max_row: int
-    min_col: int
-    max_col: int
+    min_row: Optional[int] = None
+    max_row: Optional[int] = None
+    min_col: Optional[int] = None
+    max_col: Optional[int] = None
 
 
 def find_values_in_area_callback(

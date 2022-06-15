@@ -1,14 +1,14 @@
 from typing import Callable, Optional
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.cell.cell import Cell
-from .base import BaseComparer, ReadOnlyCellTypes, SearchCellDefinition
+from .base import BaseComparer, ReadOnlyCellTypes, SearchCell
 
 
 class ValueCompare(BaseComparer):
     def __init__(
         self,
         compare_callback: Optional[
-            Callable[[ReadOnlyCellTypes, SearchCellDefinition], int]
+            Callable[[ReadOnlyCellTypes, SearchCell], int]
         ] = None,
         weigth: int = 1,
     ):
@@ -19,12 +19,12 @@ class ValueCompare(BaseComparer):
         super().__init__(weigth=weigth)
 
     def _compare(
-        self, cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
-    ) -> int:
+        self, cell: ReadOnlyCellTypes, search_cell: SearchCell
+    ) -> Optional[int]:
         return self.compare_callback(cell, search_cell)
 
     @staticmethod
     def _base_compare(
-        cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
-    ) -> int:
-        return 0 if cell.value == search_cell.value else 100
+        cell: ReadOnlyCellTypes, search_cell: SearchCell
+    ) -> Optional[int]:
+        return 100 if cell.value == search_cell.value else 0

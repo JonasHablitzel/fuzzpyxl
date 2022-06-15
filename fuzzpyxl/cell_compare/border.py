@@ -1,6 +1,7 @@
+from typing import Optional
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.styles.borders import Side as oxlSide
-from .base import BaseComparer, ReadOnlyCellTypes, SearchCellDefinition
+from .base import BaseComparer, ReadOnlyCellTypes, SearchCell
 
 
 class BorderExistanceCompare(BaseComparer):
@@ -8,31 +9,31 @@ class BorderExistanceCompare(BaseComparer):
         super().__init__(weigth=weigth)
 
     def _compare(
-        self, cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
-    ) -> int:
+        self, cell: ReadOnlyCellTypes, search_cell: SearchCell
+    ) -> Optional[int]:
 
         if cell.border is None and search_cell.border is None:
-            return 0
+            return 100
         elif cell.border is not None and search_cell.border is None:
             return 100
         elif cell.border is None and search_cell.border is not None:
-            return 100
+            return 0
 
-        res = 100
+        res = 0
         num_sides = 4
-        decrement_value = int(res / num_sides)
+        increment_value = int(res / num_sides)
 
         if self._compare_side(cell.border.top, search_cell.border.top):  # type: ignore
-            res -= decrement_value
+            res += increment_value
 
         if self._compare_side(cell.border.bottom, search_cell.border.bottom):  # type: ignore
-            res -= decrement_value
+            res += increment_value
 
         if self._compare_side(cell.border.left, search_cell.border.left):  # type: ignore
-            res -= decrement_value
+            res += increment_value
 
         if self._compare_side(cell.border.right, search_cell.border.right):  # type: ignore
-            res -= decrement_value
+            res += increment_value
 
         return res
 

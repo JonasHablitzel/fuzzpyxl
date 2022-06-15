@@ -5,3 +5,6 @@ from .value import *
 from .alignment import *
 from .font import *
 from .base import *
+from .regex import *
+from .cell_type import *
+from .ignore import *

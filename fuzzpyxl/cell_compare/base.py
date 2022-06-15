@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
 import re
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union,Tuple
 from dataclasses import dataclass, field
 from openpyxl.styles import Color as oxlColor
 from openpyxl.styles.borders import Border as oxlBorder
 from openpyxl.styles.borders import Side as oxlSide
 from openpyxl.styles.alignment import Alignment as oxlAlignment
 from openpyxl.styles.fonts import Font as oxlFont
+from openpyxl.worksheet.worksheet import Worksheet
 
 from openpyxl.cell.read_only import ReadOnlyCell, EmptyCell
+
 
 ReadOnlyCellTypes = Union[ReadOnlyCell, EmptyCell]
 
@@ -137,15 +139,22 @@ def init_oxlFont(
 
 
 @dataclass
-class SearchCellDefinition:
+class SearchCell:
     fill_color: Optional[oxlColor] = None
-    data_type: str = "s"
-    cell_type: ReadOnlyCellTypes = ReadOnlyCellTypes    
+    data_type: Optional[str] = None
+    ignore: bool = False
+    cell_type: Optional[ReadOnlyCellTypes] = None    
     border: Optional[oxlBorder] = field(default_factory=init_oxlBorder)
     value: Optional[Union[str, int, float]] = None
-    re_pattern:Optional[re.Pattern] = None
+    re_pattern:Optional[re.Pattern] = field(default=None)
     alignment: Optional[oxlAlignment] = field(default_factory=init_oxlAlignment)
     font: Optional[oxlFont] = field(default_factory=init_oxlFont)
+
+    def __post_init__(self):
+        if self.re_pattern is None:
+            return
+        if isinstance(self.re_pattern,str):
+            self.re_pattern = re.compile(self.re_pattern)
 
 
 class BaseComparer(ABC):
@@ -153,27 +162,65 @@ class BaseComparer(ABC):
         self.weigth = weigth
 
     def compare(
-        self, cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
-    ) -> int:
-        return self.weigth * self._compare(cell, search_cell)
+        self, cell: ReadOnlyCellTypes, search_cell: SearchCell
+    ) -> Tuple[int, int]:
+        score = self._compare(cell, search_cell)
+        if score is None:
+            return (0,0)
+         
+        return (self.weigth,score)
 
     @abstractmethod
     def _compare(
-        self, cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
-    ) -> int:
+        self, cell: ReadOnlyCellTypes, search_cell: SearchCell
+    ) -> Optional[int]:
         pass
 
 
 class CombinedComparer:
     def __init__(self, *args: BaseComparer):
-        self.total_weigth = sum(comparer.weigth for comparer in args)
         self.comparers = list(args)
 
     def compare(
-        self, cell: ReadOnlyCellTypes, search_cell: SearchCellDefinition
+        self, cell: ReadOnlyCellTypes, search_cell: SearchCell
     ) -> int:
+        """Compares a real cell from a docuemnt with a specific cell for wich you are looking for comparison
 
-        res = sum(comparer.compare(cell, search_cell) for comparer in self.comparers)
-        res_scaled = int(res / self.total_weigth)
+        Args:
+            cell (ReadOnlyCellTypes): input cell from the duument
+            search_cell (SearchCell): input cell wich cell is compared total_weigth
 
+        Returns:
+            int: Return a vlue between 0 and 100, 100 means they are the same, 0 means they are totally different
+        """
+        
+        if search_cell.ignore:
+            return 100
+        
+        total_weight,total_match_score = 0,0
+        for comparer in self.comparers:
+            weigth,unweighted_score = comparer.compare(cell, search_cell)
+            score = (weigth * unweighted_score)
+            total_weight += weigth
+            total_match_score += score
+
+        if total_weight == 0:
+            return 0
+        res_scaled = int(total_match_score / total_weight) # put the result again between 0 and 100
         return res_scaled
+
+
+def find_row_idxs(ws: Worksheet,row_definition:List[SearchCell],matcher:CombinedComparer,thershhold:int = 85):
+
+    found_idxs = []
+    for row_idx,row in enumerate(ws,start =1):
+        per_row_values = []
+        for cell, search_cell in zip(row, row_definition):
+            value = matcher.compare(cell, search_cell)
+            per_row_values.append(value)
+
+
+        if (sum(per_row_values) / len(row_definition)) > thershhold:
+            found_idxs.append(row_idx)
+
+    return found_idxs
